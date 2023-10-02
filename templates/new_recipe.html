@@ -1,6 +1,30 @@
 {% extends "base.html" %}
 {% block title %}New recipe{% endblock %}
-<!-- {% block styles %}<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/index.css') }}">{% endblock %} -->
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/new_recipe.css') }}">
+{% endblock %}
 {% block content %}
 <h1>New recipe</h1>
+<div class="new__recipe__title">
+    <h2>New recipe name:</h2>
+    <input class="new__recipe__name">
+</div>
+<br><br>
+<div id="ingredientContainer">
+    <div class="new__recipe__content">
+      <h3>Ingredient:</h3>
+      <input class="new__recipe__ingredient">
+      <h3>Quantity:</h3>
+      <input class="new__recipe__quantity">
+      <br><br>
+      <input type="submit" class="button__remove__ingredient" value="Remove ingredient">
+    </div>
+  </div>
+  <br><br>
+  <div class="new__recipe__submit">
+    <input type="submit" id="button__new__ingredient" value="New ingredient">
+    <input type="submit" id="button__submit" value="Submit">
+  </div>
+
+<script src="{{url_for ('static', filename='styles/remove_ingredient.js')}}"></script>
 {% endblock %}

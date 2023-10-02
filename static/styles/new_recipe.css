@@ -1,0 +1,4 @@
+/* Set the defult diplay of the button__remove__ingredient*/
+.button__remove__ingredient{
+    display: none;
+}
