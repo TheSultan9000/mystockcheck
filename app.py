@@ -1,5 +1,5 @@
 # Import packages
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 import os
 import sqlite3
@@ -30,8 +30,13 @@ def home():
 def stock():
     return render_template("stock.html")
 
-@app.route("/newrecipe/")
+@app.route("/newrecipe/", methods=['GET', 'POST'])
 def newrecipe():
+    if request.method == 'POST':
+        print(request.form['recipe'])
+        print(request.form['ingredient'])
+        print(request.form['quantity'])
+        print(request.form['measure'])
     return render_template("new_recipe.html")
 
 @app.route("/modifyrecipe/")
