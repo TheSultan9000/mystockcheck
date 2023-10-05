@@ -12,9 +12,9 @@
 <div id="ingredientContainer">
     <div class="new__recipe__content">
       <h3>Ingredient:</h3>
-      <input id="new__recipe__ingredient">
+      <input id="new__recipe__ingredient" oninput="validateTextInput(this)">
       <h3>Quantity:</h3>
-      <input type="number" min="0" step="0.25" id="new__recipe__quantity"  oninput="validateInput(this)">
+      <input min="0" step="0.25" id="new__recipe__quantity"  oninput="validateNumberInput(this)">
       <h3>Measure type:</h3>
       <select name="Measure" id="measure__name"> 
         <option value="Absolute">Absolute</option> 

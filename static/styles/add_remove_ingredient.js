@@ -18,10 +18,16 @@
             const newContent = document.querySelector(".new__recipe__content").cloneNode(true);
         
             // Clear only the input fields (excluding buttons) in the cloned content
-            const inputs = newContent.querySelectorAll("input:not([type='submit'])");
-            inputs.forEach((input) => {
-                input.value = "";
-            });
+            const ClearIngredient = newContent.querySelector("#new__recipe__ingredient");
+            if (ClearIngredient) {
+              ClearIngredient.value = "";
+            }
+
+            const ClearQuantity = newContent.querySelector("#new__recipe__quantity");
+            if (ClearQuantity) {
+              ClearQuantity.value = "";
+            }
+
 
             // Set the "Remove ingredient" button's display style to "inline" or "block"
             const removeIngredientButton = newContent.querySelector(".button__remove__ingredient");
