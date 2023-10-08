@@ -1,8 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Shopping list{% endblock %}
 {% block styles %}
-<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/index.css') }}"> -->
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/shopping_list.css') }}">
 {% endblock %}
 {% block content %}
-<h1>Shopping list</h1>
+<div id="recipes">
+    <h1>Recipes</h1>
+    <div class="all__recipe__container">
+        {% for key, items in all_recipes.items() %}
+            <div class="recipe__container">
+                <h2 class="recipe__title">{{ key }}</h2>
+                {% for item in items %}
+                    <table class="recipe__content">
+                        <tr> 
+                        <td>{{ item[0] }}:</td>
+                        <td>{{ item[1] }} {{ item[2] }}</td>
+                        </tr>
+                    </table>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="shopping__list">
+    <h1>Shopping list</h1>
+</div>
+<script src="{{url_for ('static', filename='styles/values_only.js')}}"></script>
+<script src="{{url_for ('static', filename='styles/button_colour.js')}}"></script>
+<script src="{{url_for ('static', filename='styles/generate_shopping_list.js')}}"></script>
 {% endblock %}

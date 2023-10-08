@@ -24,9 +24,21 @@ class Recipes(db.Model):
     qualtity = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
     measure = db.Column(db.String(20))
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def home():
-    return render_template("shopping_list.html")
+    conn = sqlite3.connect('instance/database.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT number, name, ingredient, qualtity, measure FROM Recipes")
+    all_recipes = cursor.fetchall()
+    conn.close()
+    all_recipes = group_data(all_recipes)
+
+    if request.method == 'POST':
+        print("Next")
+        selection = request.form['selectedItems']
+        print(selection)
+
+    return render_template("shopping_list.html", all_recipes=all_recipes)
 
 @app.route("/stock/")
 def stock():
@@ -90,6 +102,15 @@ def newrecipe():
 @app.route("/modifyrecipe/")
 def modifyrecipe():
     return render_template("modify_recipe.html")
+
+def group_data(data):
+    grouped_data = {}
+    for item in data:
+        key = '_'.join([str(item[0]), str(item[1])])
+        if key not in grouped_data:
+            grouped_data[key] = []
+        grouped_data[key].append(item[2:])  # Exclude the key from the item
+    return grouped_data
 
 if __name__ == "__main__":
     app.run(debug=True)
