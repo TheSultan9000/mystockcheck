@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 import os
+import re
 import sqlite3
 
 # As the database created is found within the instance folder, the path is saved within a variable
@@ -34,8 +35,8 @@ def home():
     all_recipes = group_data(all_recipes)
 
     if request.method == 'POST':
-        print("Next")
-        selection = request.form['selectedItems']
+        selections = request.form['selectedItems']
+        selection = re.sub(r'\s+', ' ', selections)
         print(selection)
 
     return render_template("shopping_list.html", all_recipes=all_recipes)
