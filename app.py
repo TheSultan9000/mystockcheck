@@ -35,8 +35,6 @@ def home():
     conn.close()
     all_recipes = group_data(all_recipes)
 
-    shopping_list = pd.DataFrame({'Ingredients': [], 'Quantity': [], 'Unit': []})
-
     if request.method == 'POST':
         selections = request.form['selectedItems']
         # Replace multiple spaces with a single space
@@ -49,12 +47,20 @@ def home():
         # Split the data into three separate lists
         ingredients = selections[::2]
         measures = selections[1::2]
-        quantities = [quantity.split(' ')[0] for quantity in measures]
-        units = [quantity.split(' ')[1] for quantity in measures]
-        shopping_list = pd.DataFrame({'Ingredients': ingredients, 'Quantity': quantities, 'Unit': units})
+        quantities = [float(quantity.split(' ')[0]) for quantity in measures]
+        units = []
+        for quantity in measures:
+            if len(quantity.split(' '))==2:
+                units.append((quantity.split(' ')[1]))
+            else:
+                units.append(f"{quantity.split(' ')[1]} {quantity.split(' ')[2]}")
 
-    print(shopping_list)
-    return render_template("shopping_list.html", all_recipes=all_recipes, shopping_list=shopping_list)
+        shopping_list_df = pd.DataFrame({"ingredients": ingredients, "quantities": quantities, "units": units})
+        shopping_list_df = shopping_list_df.groupby(['ingredients', 'units']).sum().reset_index()
+        
+        return jsonify(ingredients=list(shopping_list_df['ingredients']),quantities=list(shopping_list_df['quantities']), units=list(shopping_list_df['units']))
+
+    return render_template("shopping_list.html", all_recipes=all_recipes)
 
 @app.route("/stock/")
 def stock():

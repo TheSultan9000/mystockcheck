@@ -56,6 +56,64 @@ function sendSelectedItems() {
         method: 'POST',
         body: formData
     })
+    .then(response => response.json())
+    .then(data => {
+        const data_formatted = {
+            ingredients: data.ingredients.join(","),
+            quantities: data.quantities.join(","),
+            units: data.units.join(","),
+            };
+            
+        // Split the comma-separated strings into arrays
+        const ingredients = data_formatted.ingredients.split(",");
+        const quantities = data_formatted.quantities.split(",");
+        const units = data_formatted.units.split(",");
+        
+        // Create an array containing the individual items
+        const dataArray = [];
+        for (let i = 0; i < ingredients.length; i++) {
+        dataArray.push({
+            ingredient: ingredients[i],
+            quantity: quantities[i],
+            unit: units[i],
+        });
+        }
+        
+        // Create a table element
+        const table = document.createElement("table");
+        
+        // Create the table header
+        const thead = table.createTHead();
+        const headerRow = thead.insertRow(0);
+        
+        // Create table header cells
+        const headerCells = ["Ingredients", "Quantities", "Units"];
+        headerCells.forEach((headerText) => {
+        const th = document.createElement("th");
+        th.textContent = headerText;
+        headerRow.appendChild(th);
+        });
+        
+        // Create the table body and rows
+        const tbody = table.createTBody();
+        dataArray.forEach((item) => {
+        const row = tbody.insertRow();
+        const ingredientCell = row.insertCell(0);
+        const quantityCell = row.insertCell(1);
+        const unitCell = row.insertCell(2);
+        
+        ingredientCell.textContent = item.ingredient;
+        quantityCell.textContent = item.quantity;
+        unitCell.textContent = item.unit;
+        });
+        
+        // Get the tableContainer element
+        const tableContainer = document.getElementById("table__container"); // Replace with your container's ID or reference
+
+        // Replace the existing table with the new one
+        tableContainer.innerHTML = "";
+        tableContainer.appendChild(table);
+      })
     .catch(error => {
         console.error('Error:', error);
     });

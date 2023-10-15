@@ -25,25 +25,10 @@
 
 <div id="shopping__list">
     <h1>Shopping list</h1>
-    {{ test }}
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Ingredients</th>
-                <th>Quantity</th>
-                <th>Unit</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for index, row in shopping_list.iterrows() %}
-                <tr>
-                    <td>{{ row['Ingredients'] }}</td>
-                    <td>{{ row['Quantity'] }}</td>
-                    <td>{{ row['Unit'] }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div id="table__container"></div>
+    <!-- <div id="ingredient__container"></div>
+    <div id="quantity__container"></div>
+    <div id="unit__container"></div> -->
 </div>
 <script src="{{url_for ('static', filename='styles/values_only.js')}}"></script>
 <script src="{{url_for ('static', filename='styles/button_colour.js')}}"></script>
