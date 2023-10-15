@@ -16,19 +16,17 @@ function handleContainerClick(event) {
     if (clickedContainer) {
         // Check if the clicked element has the 'clicked' class
         if (clickedContainer.classList.contains('clicked')) {
-            // Extract the ingredient and quantity from the corresponding elements
-            var ingredientElement = clickedContainer.querySelector('.recipe__content');
-            var selectionVar = ingredientElement.textContent;
+            // Extract the entire content of the container
+            var containerContent = clickedContainer.textContent;
 
             // Add the selection data to the array
-            selectedItems.push(selectionVar);
+            selectedItems.push(containerContent);
         } else {
-            // Extract the ingredient and quantity from the corresponding elements
-            var ingredientElement = clickedContainer.querySelector('.recipe__content');
-            var selectionVar = ingredientElement.textContent;
+            // Extract the entire content of the container
+            var containerContent = clickedContainer.textContent;
 
-            // Find the index of the selectionVar in the selectedItems array
-            var removeIndex = selectedItems.indexOf(selectionVar);
+            // Find the index of the containerContent in the selectedItems array
+            var removeIndex = selectedItems.indexOf(containerContent);
 
             // Check if the value exists in the array before removing
             if (removeIndex !== -1) {

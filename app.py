@@ -1,9 +1,10 @@
 # Import packages
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
 import re
 import sqlite3
+import pandas as pd
 
 # As the database created is found within the instance folder, the path is saved within a variable
 db_path = os.path.join(os.path.dirname(__file__), 'instance', 'database.db')
@@ -34,12 +35,26 @@ def home():
     conn.close()
     all_recipes = group_data(all_recipes)
 
+    shopping_list = pd.DataFrame({'Ingredients': [], 'Quantity': [], 'Unit': []})
+
     if request.method == 'POST':
         selections = request.form['selectedItems']
-        selection = re.sub(r'\s+', ' ', selections)
-        print(selection)
+        # Replace multiple spaces with a single space
+        selections = re.sub(r'\s+', ' ', selections)
+        selections = selections.replace('[','').replace(']','')
+        # Replace colons, double quotes, and newline characters with nothing (remove them)
+        selections = re.sub(r'[:"]', '', selections).split(r'\n')
+        selections = [selection.strip() for selection in selections if (len(selection)>0) and ("-" not in selection) and ("," not in selection) and (selection != " ")]
+        
+        # Split the data into three separate lists
+        ingredients = selections[::2]
+        measures = selections[1::2]
+        quantities = [quantity.split(' ')[0] for quantity in measures]
+        units = [quantity.split(' ')[1] for quantity in measures]
+        shopping_list = pd.DataFrame({'Ingredients': ingredients, 'Quantity': quantities, 'Unit': units})
 
-    return render_template("shopping_list.html", all_recipes=all_recipes)
+    print(shopping_list)
+    return render_template("shopping_list.html", all_recipes=all_recipes, shopping_list=shopping_list)
 
 @app.route("/stock/")
 def stock():

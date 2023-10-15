@@ -5,7 +5,7 @@ function validateNumberInput(input) {
 
 function validateTextInput(input) {
     // Remove any commas as this will affect listing in python
-    input.value = input.value.replace(/[,_]/g, '');
+    input.value = input.value.replace(/[0-9.,_-]/g, '');
   }
 
 
