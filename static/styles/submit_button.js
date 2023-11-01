@@ -18,6 +18,16 @@ document.getElementById('new__recipe__submit').addEventListener('submit', async 
         elements.forEach(function (element){
             ingredientValue.push(element.value);
         });
+        var elements = document.querySelectorAll('#meal__days');
+        var dayValue = []
+        elements.forEach(function (element){
+            dayValue.push(element.value);
+        });
+        var elements = document.querySelectorAll('#complete__meal');
+        var completeValue = []
+        elements.forEach(function (element){
+            completeValue.push(element.value);
+        });
         var elements = document.querySelectorAll('#new__recipe__quantity');
         var quantityValue = []
         elements.forEach(function (element){
@@ -28,12 +38,20 @@ document.getElementById('new__recipe__submit').addEventListener('submit', async 
         elements.forEach(function (element){
             measureValue.push(element.value);
         });
+        var elements = document.querySelectorAll('#ingredient__type');
+        var typeValue = []
+        elements.forEach(function (element){
+          typeValue.push(element.value);
+        });
         
       var formData = new FormData();
       formData.append('recipe', recipeValue);
       formData.append('ingredient', ingredientValue);
       formData.append('quantity', quantityValue);
       formData.append('measure', measureValue);
+      formData.append('day', dayValue);
+      formData.append('complete', completeValue);
+      formData.append('type', typeValue);
   
       return fetch('/newrecipe/', {
           method: 'POST',

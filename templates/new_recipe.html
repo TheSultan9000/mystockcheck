@@ -7,6 +7,13 @@
 <div class="new__recipe__title">
     <h2>New recipe name:</h2>
     <input id="new__recipe__name" oninput="validateTextInput(this)">
+    <h3>How many days is this meal for?</h3>
+    <input id="meal__days" oninput="validateNumberInput(this)">
+    <h3>Is this a complete meal?</h3>
+      <select name="Complete meal" id="complete__meal"> 
+        <option value="Yes">Yes</option> 
+        <option value="No">No</option> 
+    </select>
 </div>
 <br><br>
 <div id="ingredientContainer">
@@ -19,9 +26,19 @@
       <select name="Measure" id="measure__name"> 
         <option value="Absolute">Absolute</option> 
         <option value="Tea spoon">Tea Spoon</option> 
-        <option value="Table spoon">Table Spoon</option> 
-        <option value="kg">kg</option>
+        <option value="Table spoon">Table Spoon</option>
+        <option value="Cup">Cup</option>
+        <option value="Bowl">Bowl</option>
+        <option value="g">g</option>
         <option value="ml">ml</option> 
+        <option value="approximately">Approximately</option>
+    </select>
+    <h3>Type of ingredient:</h3>
+      <select name="type" id="ingredient__type"> 
+        <option value="Other">Other</option> 
+        <option value="Fresh">Fresh</option> 
+        <option value="Fruit">Fruit</option>
+        <option value="Vegetable">Vegetable</option>
     </select>
       <br><br>
       <input type="submit" class="button__remove__ingredient" value="Remove ingredient">

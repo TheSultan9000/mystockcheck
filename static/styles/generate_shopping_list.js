@@ -59,12 +59,14 @@ function sendSelectedItems() {
     .then(response => response.json())
     .then(data => {
         const data_formatted = {
+            ingredients_type: data.ingredients_type.join(","),
             ingredients: data.ingredients.join(","),
             quantities: data.quantities.join(","),
             units: data.units.join(","),
             };
             
         // Split the comma-separated strings into arrays
+        const ingredients_type = data_formatted.ingredients_type.split(",");
         const ingredients = data_formatted.ingredients.split(",");
         const quantities = data_formatted.quantities.split(",");
         const units = data_formatted.units.split(",");
@@ -73,11 +75,15 @@ function sendSelectedItems() {
         const dataArray = [];
         for (let i = 0; i < ingredients.length; i++) {
         dataArray.push({
+            ingredients_type: ingredients_type[i],
             ingredient: ingredients[i],
             quantity: quantities[i],
             unit: units[i],
         });
         }
+
+        // Sort dataArray by ingredient type
+        dataArray.sort((a, b) => a.ingredients_type.localeCompare(b.ingredients_type));
         
         // Create a table element
         const table = document.createElement("table");
@@ -87,7 +93,7 @@ function sendSelectedItems() {
         const headerRow = thead.insertRow(0);
         
         // Create table header cells
-        const headerCells = ["Ingredients", "Quantities", "Units"];
+        const headerCells = ["Type", "Ingredients", "Quantities", "Units"];
         headerCells.forEach((headerText) => {
         const th = document.createElement("th");
         th.textContent = headerText;
@@ -98,10 +104,12 @@ function sendSelectedItems() {
         const tbody = table.createTBody();
         dataArray.forEach((item) => {
         const row = tbody.insertRow();
-        const ingredientCell = row.insertCell(0);
-        const quantityCell = row.insertCell(1);
-        const unitCell = row.insertCell(2);
+        const typeCell = row.insertCell(0);
+        const ingredientCell = row.insertCell(1);
+        const quantityCell = row.insertCell(2);
+        const unitCell = row.insertCell(3);
         
+        typeCell.textContent = item.ingredients_type;
         ingredientCell.textContent = item.ingredient;
         quantityCell.textContent = item.quantity;
         unitCell.textContent = item.unit;
