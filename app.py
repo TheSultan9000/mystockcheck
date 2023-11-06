@@ -1,5 +1,5 @@
 # Import packages
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import os
 import re
@@ -75,9 +75,33 @@ def home():
 
     return render_template("shopping_list.html", all_recipes=all_recipes, meta_info=meta_info)
 
-@app.route("/stock/")
-def stock():
-    return render_template("stock.html")
+@app.route("/<recipe_to_modify>/", methods=['GET', 'POST'])
+def recipetomodify(recipe_to_modify):
+    print(recipe_to_modify)
+    # Use recipe_to_modify to then filter and extract recipe (this can now be done directly on the shopping list html)
+    return render_template(".html")
+
+@app.route("/modifyrecipe/", methods=['GET', 'POST'])
+def modify_recipe():
+    conn = sqlite3.connect('instance/database.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT number, name, ingredient, qualtity, measure, type FROM Recipes")
+    all_recipes = cursor.fetchall()
+    cursor.execute("SELECT number, name, days, complete_meal FROM Recipes")
+    meta_info = cursor.fetchall()
+    conn.close()
+    
+    all_recipes = group_data(all_recipes)
+    meta_info = group_data(meta_info)
+    for key in meta_info:
+        meta_info[key] = list(set(meta_info[key]))
+
+    if (request.method == 'POST'):
+        recipe_to_modify = 'Test_recipe'
+        return jsonify(recipe_to_modify)
+    
+    else:
+        return render_template("modify_recipe.html", all_recipes=all_recipes, meta_info=meta_info)
 
 @app.route("/newrecipe/", methods=['GET', 'POST'])
 def newrecipe():
@@ -137,13 +161,7 @@ def newrecipe():
                 db.session.add(new_upload)
                 db.session.commit()
 
-
-
     return render_template("new_recipe.html")
-
-@app.route("/modifyrecipe/")
-def modifyrecipe():
-    return render_template("modify_recipe.html")
 
 def group_data(data):
     grouped_data = {}

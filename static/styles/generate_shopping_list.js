@@ -116,7 +116,7 @@ function sendSelectedItems() {
         });
         
         // Get the tableContainer element
-        const tableContainer = document.getElementById("table__container"); // Replace with your container's ID or reference
+        const tableContainer = document.getElementById("table__container");
 
         // Replace the existing table with the new one
         tableContainer.innerHTML = "";
