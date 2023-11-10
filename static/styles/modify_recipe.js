@@ -23,8 +23,9 @@ async function modifyfunction(buttonValue) {
 
     var formData = new FormData();
     formData.append('button', buttonValue);
+    formData.append('request_type', 'modify_recipe');
 
-    return fetch('/modifyrecipe/', {
+    return fetch('/', {
         method: 'POST',
         body: formData
       })

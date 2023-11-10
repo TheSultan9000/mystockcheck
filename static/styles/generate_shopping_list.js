@@ -51,6 +51,7 @@ function findParentContainer(element, className) {
 function sendSelectedItems() {
     var formData = new FormData();
     formData.append('selectedItems', JSON.stringify(selectedItems));
+    formData.append('request_type', 'shopping_list');
 
     fetch('/', {
         method: 'POST',

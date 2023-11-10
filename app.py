@@ -31,77 +31,54 @@ class Recipes(db.Model):
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
-    conn = sqlite3.connect('instance/database.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT number, name, ingredient, qualtity, measure, type FROM Recipes")
-    all_recipes = cursor.fetchall()
-    cursor.execute("SELECT number, name, days, complete_meal FROM Recipes")
-    meta_info = cursor.fetchall()
-    conn.close()
-    
-    all_recipes = group_data(all_recipes)
-    meta_info = group_data(meta_info)
-    for key in meta_info:
-        meta_info[key] = list(set(meta_info[key]))
+    all_recipes, meta_info = db_all_recipes()
 
     if request.method == 'POST':
-        selections = request.form['selectedItems']
-        # Replace multiple spaces with a single space
-        selections = re.sub(r'\s+', ' ', selections)
-        selections = selections.replace('[','').replace(']','')
-        # Replace colons, double quotes, and newline characters with nothing (remove them)
-        selections = re.sub(r'[:"]', '', selections).split(r'\n')
-        selections = [selection.strip() for selection in selections if (len(selection)>0) and ("-" not in selection) and ("?" not in selection) and ("," not in selection) and (selection != " ")]
-        
+        request_type = request.form['request_type']
+        if request_type == 'shopping_list':
+            selections = request.form['selectedItems']
+            # Replace multiple spaces with a single space
+            selections = re.sub(r'\s+', ' ', selections)
+            selections = selections.replace('[','').replace(']','')
+            # Replace colons, double quotes, and newline characters with nothing (remove them)
+            selections = re.sub(r'[:"]', '', selections).split(r'\n')
+            selections = [selection.strip() for selection in selections if (len(selection)>0) and ("-" not in selection) and ("?" not in selection) and ("," not in selection) and (selection != " ")]
+            
 
-        # Split the data into three separate lists
-        ingredients = selections[::2]
-        measures = selections[1::2]
-        quantities = [float(quantity.split(' ')[0]) for quantity in measures]
-        units = []
-        ingredients_type = []
-        for unit in measures:
-            if len(unit.split(' '))==3:
-                units.append((unit.split(' ')[1]))
-                ingredients_type.append((unit.split(' ')[2]))
-            else:
-                units.append(f"{unit.split(' ')[1]} {unit.split(' ')[2]}")
-                ingredients_type.append((unit.split(' ')[3]))
+            # Split the data into three separate lists
+            ingredients = selections[::2]
+            measures = selections[1::2]
+            quantities = [float(quantity.split(' ')[0]) for quantity in measures]
+            units = []
+            ingredients_type = []
+            for unit in measures:
+                if len(unit.split(' '))==3:
+                    units.append((unit.split(' ')[1]))
+                    ingredients_type.append((unit.split(' ')[2]))
+                else:
+                    units.append(f"{unit.split(' ')[1]} {unit.split(' ')[2]}")
+                    ingredients_type.append((unit.split(' ')[3]))
 
-        shopping_list_df = pd.DataFrame({"ingredients": ingredients, "quantities": quantities, "units": units, "type": ingredients_type})
-        shopping_list_df = shopping_list_df.groupby(['ingredients', 'units', 'type']).sum().reset_index()
-        
-        return jsonify(ingredients=list(shopping_list_df['ingredients']),quantities=list(shopping_list_df['quantities']), units=list(shopping_list_df['units']), ingredients_type=list(shopping_list_df['type']))
+            shopping_list_df = pd.DataFrame({"ingredients": ingredients, "quantities": quantities, "units": units, "type": ingredients_type})
+            shopping_list_df = shopping_list_df.groupby(['ingredients', 'units', 'type']).sum().reset_index()
+            
+            return jsonify(ingredients=list(shopping_list_df['ingredients']),quantities=list(shopping_list_df['quantities']), units=list(shopping_list_df['units']), ingredients_type=list(shopping_list_df['type']))
+        elif request_type == 'modify_recipe':
+            recipe_to_modify = request.form['button']
+            return jsonify(recipe_to_modify)    
 
     return render_template("shopping_list.html", all_recipes=all_recipes, meta_info=meta_info)
 
 @app.route("/<recipe_to_modify>/", methods=['GET', 'POST'])
 def recipetomodify(recipe_to_modify):
-    print(recipe_to_modify)
-    # Use recipe_to_modify to then filter and extract recipe (this can now be done directly on the shopping list html)
-    return render_template(".html")
-
-@app.route("/modifyrecipe/", methods=['GET', 'POST'])
-def modify_recipe():
-    conn = sqlite3.connect('instance/database.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT number, name, ingredient, qualtity, measure, type FROM Recipes")
-    all_recipes = cursor.fetchall()
-    cursor.execute("SELECT number, name, days, complete_meal FROM Recipes")
-    meta_info = cursor.fetchall()
-    conn.close()
-    
-    all_recipes = group_data(all_recipes)
-    meta_info = group_data(meta_info)
-    for key in meta_info:
-        meta_info[key] = list(set(meta_info[key]))
-
-    if (request.method == 'POST'):
-        recipe_to_modify = 'Test_recipe'
-        return jsonify(recipe_to_modify)
-    
-    else:
-        return render_template("modify_recipe.html", all_recipes=all_recipes, meta_info=meta_info)
+    if recipe_to_modify != 'favicon.ico':
+        recipe_name_to_modify = recipe_to_modify.split("_")[1]
+        recipe_number_to_modify = recipe_to_modify.split("_")[0]
+        all_recipes, meta_info = db_all_recipes()
+        all_recipes = all_recipes[recipe_to_modify]
+        meta_info = meta_info[recipe_to_modify][0]
+        return render_template("modify_recipe.html", all_recipes=all_recipes, meta_info=meta_info, recipe_name = recipe_name_to_modify, recipe_number= recipe_number_to_modify)
+    return ""
 
 @app.route("/newrecipe/", methods=['GET', 'POST'])
 def newrecipe():
@@ -171,6 +148,22 @@ def group_data(data):
             grouped_data[key] = []
         grouped_data[key].append(item[2:])  # Exclude the key from the item
     return grouped_data
+
+def db_all_recipes():
+    conn = sqlite3.connect('instance/database.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT number, name, ingredient, qualtity, measure, type FROM Recipes")
+    all_recipes = cursor.fetchall()
+    cursor.execute("SELECT number, name, days, complete_meal FROM Recipes")
+    meta_info = cursor.fetchall()
+    conn.close()
+    
+    all_recipes = group_data(all_recipes)
+    meta_info = group_data(meta_info)
+    for key in meta_info:
+        meta_info[key] = list(set(meta_info[key]))
+
+    return all_recipes, meta_info
 
 if __name__ == "__main__":
     app.run(debug=True)
