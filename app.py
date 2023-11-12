@@ -65,7 +65,19 @@ def home():
             return jsonify(ingredients=list(shopping_list_df['ingredients']),quantities=list(shopping_list_df['quantities']), units=list(shopping_list_df['units']), ingredients_type=list(shopping_list_df['type']))
         elif request_type == 'modify_recipe':
             recipe_to_modify = request.form['button']
-            return jsonify(recipe_to_modify)    
+            return jsonify(recipe_to_modify)
+        elif request_type == 'delete_recipe':
+            recipe_to_delete = request.form['button'].split("_")[0]
+            # Delete the rows with the recipe number
+            # Connect to the SQLite database
+            conn = sqlite3.connect('instance/database.db')
+            cursor = conn.cursor()
+            # Execute the DELETE query
+            cursor.execute("DELETE FROM Recipes WHERE number = ?", (recipe_to_delete,))
+            # Commit the transaction to save the changes
+            conn.commit()
+            # Close the database connection
+            conn.close()
 
     return render_template("shopping_list.html", all_recipes=all_recipes, meta_info=meta_info)
 
@@ -131,8 +143,21 @@ def newrecipe():
             if ingredient != 0 and quantity != 0:
                 combined_inputs.append([ingredient.capitalize().strip(), round(float(quantity),2), measure, type_input])
         
-        #  Update db
+        # Update db
+        # Ensures thaty the script is only run if there is at least on ingredient
         if len(combined_inputs) > 0:
+            recipe_number_to_remove = request.form['button']
+            if recipe_number_to_remove != "submit_new_recipe":
+                # Delete the rows with the recipe number
+                # Connect to the SQLite database
+                conn = sqlite3.connect('instance/database.db')
+                cursor = conn.cursor()
+                # Execute the DELETE query
+                cursor.execute("DELETE FROM Recipes WHERE number = ?", (recipe_number_to_remove,))
+                # Commit the transaction to save the changes
+                conn.commit()
+                # Close the database connection
+                conn.close()
             for combined_input in combined_inputs:
                 new_upload = Recipes(name = recipe_name,days = number_days,complete_meal = complete_meal_input,number = highest_number, ingredient = combined_input[0], qualtity = combined_input[1], measure = combined_input[2], type = combined_input[3])
                 db.session.add(new_upload)

@@ -1,6 +1,6 @@
 #recipes{
     float: left;
-    width: 50%;
+    width: 75%;
 }
 
 .all__recipe__container {
@@ -11,19 +11,29 @@
 }
 
 .recipe__container {
+    text-align: center;
     width: 100%;
-    /* Set a maximum height for the container */
-    max-height: 300px;
+    /* Set a height for the container */
+    height: 300px;
     /* Add a vertical scrollbar when the content overflows */
     overflow-y: auto;
     transition: background-color 0.3s; /* Add a smooth transition effect */
     cursor: pointer; /* Change the cursor to a pointer on hover */
+    background-color: rgb(253, 253, 150);
+}
+
+.recipe__content{
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .recipe__container.clicked {
-    background-color: rgba(0, 0, 0, 0.3); /* Greyed out or transparent background color */
+    background-color: rgba(255, 209, 220); /* Greyed out or transparent background color */
 }
 
 #table__container table {
+    margin-left: auto;
+    margin-right: auto;
     border-spacing: 20px;
+    text-align: center;
   }

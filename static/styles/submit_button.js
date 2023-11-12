@@ -6,8 +6,8 @@ document.getElementById('new__recipe__submit').addEventListener('submit', async 
       // await ensures the Flask function is complete before progessing
       await sumbitRecipe();
     
-      // Reload the page once the script is executed
-      location.reload();
+      // Redirect back to home page
+      window.location.href = "http://127.0.0.1:5000/"
     });
     
     function sumbitRecipe() {
@@ -44,6 +44,8 @@ document.getElementById('new__recipe__submit').addEventListener('submit', async 
           typeValue.push(element.value);
         });
         
+        var buttonValue = document.getElementById('button__submit').value;
+        
       var formData = new FormData();
       formData.append('recipe', recipeValue);
       formData.append('ingredient', ingredientValue);
@@ -52,6 +54,7 @@ document.getElementById('new__recipe__submit').addEventListener('submit', async 
       formData.append('day', dayValue);
       formData.append('complete', completeValue);
       formData.append('type', typeValue);
+      formData.append('button', buttonValue);
   
       return fetch('/newrecipe/', {
           method: 'POST',

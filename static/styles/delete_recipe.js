@@ -1,18 +1,25 @@
 // As the buttons are being created through a for loop to extract the information from the Flask framework, a list of all buttons is created
-let modify_btns = document.querySelectorAll(".modification__button");
+let btns_delete = document.querySelectorAll(".delete__button");
 
 // A listener is then added to each button before executing the deletefunction
-modify_btns.forEach(modify_btn => {
+btns_delete.forEach(btn_delete => {
 
-   modify_btn.addEventListener('click', async (event)=> {
+  btn_delete.addEventListener('click', async (event)=> {
 
     event.preventDefault();
     
-    await modifyfunction(modify_btn.value);
+    // Confirm deletion
+    var result = confirm("Are you sure you want to DELETE this recipe?");
+    if (result) {
+      await deletefunction(btn_delete.value);
+    }
+
+    // Redirect back to home page
+    window.location.href = "http://127.0.0.1:5000/"
   });
 });
   
-async function modifyfunction(buttonValue) {
+async function deletefunction(buttonValue) {
   /** 
   * Passes the button id to the flask framework
   * Expects: activation of modification button, string: button id
@@ -22,15 +29,10 @@ async function modifyfunction(buttonValue) {
 
     var formData = new FormData();
     formData.append('button', buttonValue);
-    formData.append('request_type', 'modify_recipe');
+    formData.append('request_type', 'delete_recipe');
 
     return fetch('/', {
         method: 'POST',
         body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        window.location.href = "http://127.0.0.1:5000/" + data + "/";
-      })
-        .catch(error => console.error(error));
+      }).catch(error => console.error(error));
   }
