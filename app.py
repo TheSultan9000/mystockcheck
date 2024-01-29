@@ -87,13 +87,14 @@ def home():
 @app.route("/<recipe_to_modify>/", methods=['GET', 'POST'])
 def recipetomodify(recipe_to_modify):
     if recipe_to_modify != 'favicon.ico':
+        previous_ingredients = previousingredients()
         recipe_name_to_modify = recipe_to_modify.split("_")[2]
         recipe_number_to_modify = recipe_to_modify.split("_")[1]
         all_recipes, meta_info = db_all_recipes()
         all_recipes = all_recipes[recipe_to_modify]
         meta_info = meta_info[recipe_to_modify][0]
         recipe_group = recipe_to_modify.split("_")[0]
-        return render_template("modify_recipe.html", all_recipes=all_recipes, meta_info=meta_info, recipe_name = recipe_name_to_modify, recipe_number= recipe_number_to_modify, recipe_group = recipe_group)
+        return render_template("modify_recipe.html", all_recipes=all_recipes, meta_info=meta_info, recipe_name = recipe_name_to_modify, recipe_number= recipe_number_to_modify, recipe_group = recipe_group, previous_ingredients = previous_ingredients)
     return ""
 
 @app.route("/newrecipe/", methods=['GET', 'POST'])
