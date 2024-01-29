@@ -122,6 +122,11 @@ function sendSelectedItems() {
         // Replace the existing table with the new one
         tableContainer.innerHTML = "";
         tableContainer.appendChild(table);
+
+        // Add recipe list to the HTML page
+        var recipe__list = document.getElementById('recipe__list');
+        recipe__list.textContent = "Selected recipes: " + data.recipe_list.join(", ");
+
       })
     .catch(error => {
         console.error('Error:', error);

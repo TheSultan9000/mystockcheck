@@ -23,6 +23,11 @@ document.getElementById('new__recipe__submit').addEventListener('submit', async 
         elements.forEach(function (element){
             dayValue.push(element.value);
         });
+        var elements = document.querySelectorAll('#meal__group');
+        var groupValue = []
+        elements.forEach(function (element){
+          groupValue.push(element.value);
+        });
         var elements = document.querySelectorAll('#complete__meal');
         var completeValue = []
         elements.forEach(function (element){
@@ -52,6 +57,7 @@ document.getElementById('new__recipe__submit').addEventListener('submit', async 
       formData.append('quantity', quantityValue);
       formData.append('measure', measureValue);
       formData.append('day', dayValue);
+      formData.append('group', groupValue);
       formData.append('complete', completeValue);
       formData.append('type', typeValue);
       formData.append('button', buttonValue);

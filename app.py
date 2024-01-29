@@ -5,6 +5,8 @@ import os
 import re
 import sqlite3
 import pandas as pd
+import webbrowser
+
 
 # As the database created is found within the instance folder, the path is saved within a variable
 db_path = os.path.join(os.path.dirname(__file__), 'instance', 'database.db')
@@ -23,6 +25,7 @@ class Recipes(db.Model):
     days = db.Column(db.Float, nullable=False)
     complete_meal = db.Column(db.String(20))
     number  = db.Column(db.Integer)
+    group = db.Column(db.Integer)
     ingredient = db.Column(db.String(1000))
     # Limited to 2 decimal places
     qualtity = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
@@ -32,7 +35,6 @@ class Recipes(db.Model):
 @app.route("/", methods=['GET', 'POST'])
 def home():
     all_recipes, meta_info = db_all_recipes()
-
     if request.method == 'POST':
         request_type = request.form['request_type']
         if request_type == 'shopping_list':
@@ -42,6 +44,7 @@ def home():
             selections = selections.replace('[','').replace(']','')
             # Replace colons, double quotes, and newline characters with nothing (remove them)
             selections = re.sub(r'[:"]', '', selections).split(r'\n')
+            recipe_list = [selection.replace("-", "").strip() for selection in selections if (len(selection)>0) and ("-" in selection) and ("days" not in selection)  and ("Group" not in selection)]
             selections = [selection.strip() for selection in selections if (len(selection)>0) and ("-" not in selection) and ("?" not in selection) and ("," not in selection) and (selection != " ")]
             
 
@@ -62,7 +65,7 @@ def home():
             shopping_list_df = pd.DataFrame({"ingredients": ingredients, "quantities": quantities, "units": units, "type": ingredients_type})
             shopping_list_df = shopping_list_df.groupby(['ingredients', 'units', 'type']).sum().reset_index()
             
-            return jsonify(ingredients=list(shopping_list_df['ingredients']),quantities=list(shopping_list_df['quantities']), units=list(shopping_list_df['units']), ingredients_type=list(shopping_list_df['type']))
+            return jsonify(recipe_list = recipe_list, ingredients=list(shopping_list_df['ingredients']),quantities=list(shopping_list_df['quantities']), units=list(shopping_list_df['units']), ingredients_type=list(shopping_list_df['type']))
         elif request_type == 'modify_recipe':
             recipe_to_modify = request.form['button']
             return jsonify(recipe_to_modify)
@@ -84,16 +87,18 @@ def home():
 @app.route("/<recipe_to_modify>/", methods=['GET', 'POST'])
 def recipetomodify(recipe_to_modify):
     if recipe_to_modify != 'favicon.ico':
-        recipe_name_to_modify = recipe_to_modify.split("_")[1]
-        recipe_number_to_modify = recipe_to_modify.split("_")[0]
+        recipe_name_to_modify = recipe_to_modify.split("_")[2]
+        recipe_number_to_modify = recipe_to_modify.split("_")[1]
         all_recipes, meta_info = db_all_recipes()
         all_recipes = all_recipes[recipe_to_modify]
         meta_info = meta_info[recipe_to_modify][0]
-        return render_template("modify_recipe.html", all_recipes=all_recipes, meta_info=meta_info, recipe_name = recipe_name_to_modify, recipe_number= recipe_number_to_modify)
+        recipe_group = recipe_to_modify.split("_")[0]
+        return render_template("modify_recipe.html", all_recipes=all_recipes, meta_info=meta_info, recipe_name = recipe_name_to_modify, recipe_number= recipe_number_to_modify, recipe_group = recipe_group)
     return ""
 
 @app.route("/newrecipe/", methods=['GET', 'POST'])
 def newrecipe():
+    previous_ingredients = previousingredients()
     # If the submit button is activated
     if request.method == 'POST':
         # Extract the recipe name (in no name given, the name is assigned "Unnamed recipe")
@@ -107,6 +112,12 @@ def newrecipe():
             number_days = 1
         else:
             number_days = request.form['day'].title()
+
+        # Extract the group number
+        if not request.form['group']:
+            group_number = 0
+        else:
+            group_number = request.form['group'].title()
 
         # Extract if it is a complete meal
         complete_meal_input = request.form['complete']
@@ -159,16 +170,16 @@ def newrecipe():
                 # Close the database connection
                 conn.close()
             for combined_input in combined_inputs:
-                new_upload = Recipes(name = recipe_name,days = number_days,complete_meal = complete_meal_input,number = highest_number, ingredient = combined_input[0], qualtity = combined_input[1], measure = combined_input[2], type = combined_input[3])
+                new_upload = Recipes(name = recipe_name, days = number_days, group = group_number, complete_meal = complete_meal_input,number = highest_number, ingredient = combined_input[0], qualtity = combined_input[1], measure = combined_input[2], type = combined_input[3])
                 db.session.add(new_upload)
                 db.session.commit()
 
-    return render_template("new_recipe.html")
+    return render_template("new_recipe.html", previous_ingredients = previous_ingredients)
 
 def group_data(data):
     grouped_data = {}
     for item in data:
-        key = '_'.join([str(item[0]), str(item[1])])
+        key = '_'.join([str(item[0]), str(item[1]), str(item[2])])
         if key not in grouped_data:
             grouped_data[key] = []
         grouped_data[key].append(item[2:])  # Exclude the key from the item
@@ -177,9 +188,9 @@ def group_data(data):
 def db_all_recipes():
     conn = sqlite3.connect('instance/database.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT number, name, ingredient, qualtity, measure, type FROM Recipes")
+    cursor.execute("SELECT \"group\", number, name, ingredient, qualtity, measure, type FROM Recipes")
     all_recipes = cursor.fetchall()
-    cursor.execute("SELECT number, name, days, complete_meal FROM Recipes")
+    cursor.execute("SELECT \"group\", number, name, \"group\", days, complete_meal FROM Recipes")
     meta_info = cursor.fetchall()
     conn.close()
     
@@ -190,5 +201,13 @@ def db_all_recipes():
 
     return all_recipes, meta_info
 
+def previousingredients():
+    conn = sqlite3.connect('instance/database.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT ingredient FROM Recipes")
+
+    return [re.sub(r'[^a-zA-Z\s]', '', ingredient[0]) for ingredient in list(set(cursor.fetchall()))]
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    webbrowser.open_new('http://127.0.0.1:5000/')
+    app.run(debug=False) # debug set to false otherwise two tabs will open when running the app
