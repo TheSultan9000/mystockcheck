@@ -8,12 +8,12 @@
     <h2>New recipe name:</h2>
     <input id="new__recipe__name" value = "{{recipe_name}}" oninput="validateTextInput(this)">
     <h3>How many days is this meal for?</h3>
-    <input id="meal__days" value="{{meta_info[1]}}" oninput="validateNumberInput(this)">
+    <input id="meal__days" value="{{meta_info[2]}}" oninput="validateNumberInput(this)">
     <h3>Enter group number (default is 0)-</h3>
     <input id="meal__group" value="{{recipe_group}}" oninput="validateNumberInput(this)">
     <h3>Is this a complete meal?</h3>
     <select name="Complete meal" id="complete__meal">
-        <option value="{{meta_info[2]}}" selected disabled hidden>{{meta_info[1]}}</option>
+        <option value="{{meta_info[3]}}" selected disabled hidden>{{meta_info[3]}}</option>
         <option value="No">No</option> 
         <option value="Yes">Yes</option> 
     </select>
@@ -35,7 +35,7 @@
     <input min="0" step="0.25" id="new__recipe__quantity" value="{{item[2]}}"  oninput="validateNumberInput(this)">
     <h3>Units:</h3>
     <select name="Measure" id="measure__name"> 
-        <option value="{{item[3]}}" selected disabled hidden>{{item[2]}}</option>
+        <option value="{{item[3]}}" selected disabled hidden>{{item[3]}}</option>
         <option value="Absolute">Absolute</option> 
         <option value="Tea spoon">Tea Spoon</option> 
         <option value="Table spoon">Table Spoon</option>
@@ -47,7 +47,7 @@
     </select>
     <h3>Type of ingredient:</h3>
     <select name="type" id="ingredient__type">
-        <option value="{{item[4]}}" selected disabled hidden>{{item[3]}}</option>
+        <option value="{{item[4]}}" selected disabled hidden>{{item[4]}}</option>
         <option value="Other">Other</option> 
         <option value="Fresh">Fresh</option> 
         <option value="Fruit">Fruit</option>

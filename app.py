@@ -189,9 +189,9 @@ def group_data(data):
 def db_all_recipes():
     conn = sqlite3.connect('instance/database.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT \"group\", number, name, ingredient, qualtity, measure, type FROM Recipes")
+    cursor.execute("SELECT \"group\", number, name, ingredient, qualtity, measure, type FROM Recipes ORDER BY \"group\" ASC")
     all_recipes = cursor.fetchall()
-    cursor.execute("SELECT \"group\", number, name, \"group\", days, complete_meal FROM Recipes")
+    cursor.execute("SELECT \"group\", number, name, \"group\", days, complete_meal FROM Recipes ORDER BY \"group\" ASC")
     meta_info = cursor.fetchall()
     conn.close()
     
@@ -210,5 +210,5 @@ def previousingredients():
     return [re.sub(r'[^a-zA-Z\s]', '', ingredient[0]) for ingredient in list(set(cursor.fetchall()))]
 
 if __name__ == "__main__":
-    webbrowser.open_new('http://127.0.0.1:5000/')
-    app.run(debug=False) # debug set to false otherwise two tabs will open when running the app
+    # webbrowser.open_new('http://127.0.0.1:5000/')
+    app.run(debug=True) # debug set to false otherwise two tabs will open when running the app
