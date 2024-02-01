@@ -210,5 +210,5 @@ def previousingredients():
     return [re.sub(r'[^a-zA-Z\s]', '', ingredient[0]) for ingredient in list(set(cursor.fetchall()))]
 
 if __name__ == "__main__":
-    # webbrowser.open_new('http://127.0.0.1:5000/')
-    app.run(debug=True) # debug set to false otherwise two tabs will open when running the app
+    webbrowser.open_new('http://127.0.0.1:5000/')
+    app.run(debug=False) # debug set to false otherwise two tabs will open when running the app
